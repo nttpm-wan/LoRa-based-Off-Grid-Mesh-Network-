@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f2e9">
+    <meta name="description" content="LORMesh off-grid rescue communication simulator">
+    <title>LORMesh | Off-grid Rescue Network</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M22 4 40 38H4Z' fill='%23273027'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="LORMesh home">
+        <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true">
+          <path d="M22 4 40 38H4L22 4Z" fill="currentColor"/>
+          <path d="M13 22h18M10 28h24M7 34h30" stroke="#f5f2e9" stroke-width="2.2"/>
+        </svg>
+        <span class="brand-copy"><strong>LORMesh</strong><small>Off-grid rescue communication</small></span>
+      </a>
+      <div class="system-state" aria-label="สถานะระบบจำลอง">
+        <div class="state-item"><span class="state-symbol mesh-symbol" aria-hidden="true">⌘</span><span><b>Mesh Network</b><small><i id="mesh-dot" class="dot online-dot"></i> <span id="mesh-status">กำลังเชื่อมต่อ</span></small></span></div>
+        <div class="state-item"><span class="state-symbol wifi-symbol" aria-hidden="true">⌁</span><span><b id="connection-title">Wi-Fi AP</b><small id="connection-summary"><i class="dot"></i> Captive Portal จำลอง · NODE-A</small></span></div>
+        <div class="state-item gps-state"><span class="state-symbol pin-symbol" aria-hidden="true">⌖</span><span><b>GPS Node A</b><small id="header-gps">กำลังอ่านพิกัดจำลอง</small></span></div>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <section class="main-column" aria-label="เครือข่ายและการส่งข้อความ">
+        <section class="map-panel panel">
+          <div class="section-heading map-heading">
+            <div><h1>แผนผังเครือข่าย LORMesh</h1><p id="route-caption">A → B → C · Node D เป็นรีเลย์สำรอง</p></div>
+            <div class="map-meta"><span class="live-pulse"></span>อัปเดต <time id="updated-at">--:--:--</time><span class="map-meta-separator"></span>ระยะวิทยุจำลอง <b id="radio-range">700 m</b></div>
+          </div>
+          <div class="map-canvas" id="map-canvas" role="group" aria-label="แผนผังโหนดและเส้นทาง Mesh">
+            <svg class="map-lines" id="map-lines" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div id="map-nodes" class="map-nodes"></div>
+            <div class="north-mark" aria-hidden="true"><span>N</span><b>▲</b></div>
+            <div class="map-legend"><span><i class="legend-dot user-dot"></i> ผู้ส่ง</span><span><i class="legend-dot relay-dot"></i> รีเลย์</span><span><i class="legend-dot receiver-dot"></i> ผู้รับ</span></div>
+          </div>
+          <p class="map-note">แผนที่ออฟไลน์แบบ schematic · ตำแหน่งและระยะเป็นข้อมูลจำลอง ไม่ใช่ผลวัดวิทยุจริง</p>
+        </section>
+
+        <section class="composer panel" aria-labelledby="composer-title">
+          <div class="composer-main">
+            <div class="section-heading"><div><h2 id="composer-title">ส่งข้อความ</h2><p>ข้อความจะถูกส่งต่อผ่าน Node กลางตามเส้นทาง Mesh</p></div></div>
+            <div class="connection-controls" role="group" aria-label="ช่องทางเชื่อมต่อผู้ใช้">
+              <span>ช่องทางผู้ใช้</span>
+              <button type="button" class="connection-option active" data-connection-mode="wifi" aria-pressed="true">Wi-Fi AP</button>
+              <button type="button" class="connection-option" data-connection-mode="ble" aria-pressed="false">BLE fallback</button>
+              <small id="connection-note">Captive Portal จำลองเปิดอัตโนมัติเมื่อเชื่อม Wi-Fi</small>
+            </div>
+            <form id="message-form">
+              <div class="form-row">
+                <label>ต้นทาง (จากโหนด)<select id="message-source" name="source"></select></label>
+                <label>ปลายทาง (ไปยังโหนด)<select id="message-destination" name="destination"></select></label>
+              </div>
+              <label class="message-label">ข้อความ<textarea id="message-text" name="text" rows="3" maxlength="200" placeholder="พิมพ์ข้อความถึงทีมกู้ภัย" required>พบผู้ประสบภัย ต้องการความช่วยเหลือ</textarea></label>
+              <div class="composer-actions"><span class="field-hint">แนบพิกัด GPS ของต้นทางอัตโนมัติ</span><div><span id="character-count">0/200</span><button class="send-button" type="submit"><span aria-hidden="true">➤</span> ส่งข้อความ</button></div></div>
+            </form>
+          </div>
+          <div class="sos-box">
+            <div class="sos-icon" aria-hidden="true">!</div>
+            <h3>แจ้งเหตุฉุกเฉิน</h3>
+            <p>ส่ง SOS พร้อมพิกัด GPS อัตโนมัติ</p>
+            <label>โหนดต้นทาง<select id="sos-source" name="sos-source"></select></label>
+            <button id="sos-button" class="sos-button" type="button"><span aria-hidden="true">⌁</span> ส่งสัญญาณ SOS</button>
+            <small>ปลายทางที่รับจะมีเสียงและไฟแจ้งเตือนจำลอง</small>
+          </div>
+        </section>
+      </section>
+
+      <aside class="side-column">
+        <section class="node-panel panel" aria-labelledby="nodes-title">
+          <div class="section-heading side-heading"><div><h2 id="nodes-title">สถานะโหนด</h2><p>Wi-Fi AP และตำแหน่ง GPS จำลอง</p></div><button id="reset-button" class="text-button" type="button">เริ่มใหม่</button></div>
+          <div id="node-list" class="node-list"></div>
+          <details class="gps-tools">
+            <summary>ทดสอบ GPS Parser · NMEA → Lat/Lng</summary>
+            <form id="gps-form">
+              <label>โหนด GPS<select id="gps-node" name="node_id"></select></label>
+              <label>ประโยค NMEA<textarea id="gps-sentence" name="sentence" rows="2" spellcheck="false">$GPRMC,123519,A,1345.3600,N,10030.0600,E,0.0,0.0,230394,,,A</textarea></label>
+              <button type="submit" class="gps-parse-button">แปลงพิกัดและอัปเดตแผนที่</button>
+              <p id="gps-result" role="status">ป้อน NMEA RMC หรือ GGA ที่มี GPS fix</p>
+            </form>
+          </details>
+        </section>
+        <section class="events-panel panel" aria-labelledby="events-title">
+          <div class="section-heading side-heading"><div><h2 id="events-title">เหตุการณ์ล่าสุด</h2><p>ผลจากการส่งและรับ packet</p></div><span id="event-count" class="event-count">0</span></div>
+          <ol id="event-list" class="event-list"></ol>
+          <div id="empty-events" class="empty-events">ยังไม่มีเหตุการณ์<br><span>ส่งข้อความหรือ SOS เพื่อเริ่มทดสอบ</span></div>
+        </section>
+        <section class="alert-panel panel" id="alert-panel" aria-live="polite">
+          <div class="alert-lamp" id="alert-lamp"><span></span></div>
+          <div><h2>การแจ้งเตือนปลายทาง</h2><p id="alert-status">Buzzer และ LED จะทำงานเมื่อได้รับ SOS</p></div>
+          <span class="alert-label" id="alert-label">พร้อม</span>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="app-footer"><span>LORMesh · Software demonstration</span><span>จำลอง Wi-Fi AP, LoRa, GPS, Buzzer และ LED · ไม่เชื่อมต่อฮาร์ดแวร์จริง</span></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
