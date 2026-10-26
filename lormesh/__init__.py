@@ -1,4 +1,4 @@
-"""A small, hardware-independent LoRa mesh routing prototype."""
+"""Mesh routing and GPS utilities for the LORMesh application."""
 
 from .models import MeshNode, Packet, Position, SendResult
 from .network import MeshNetwork

@@ -1,14 +1,12 @@
-# LORMesh — LoRa-based Off-Grid Mesh Rescue Network
+# LORMesh — Off-Grid Mesh Communication
 
-A software prototype based on a university rescue communication project. It simulates multi-hop messages, SOS broadcasts with source coordinates, relay failure recovery, and a local web dashboard. Includes a working NMEA parser and automated routing/API tests. Physical LoRa, Wi-Fi AP, BLE, and GPS hardware integration are planned.
+Python-based mesh communication software for off-grid rescue scenarios, with multi-hop messaging, SOS packets carrying source coordinates, automatic rerouting, and a local web dashboard. Includes NMEA parsing and automated routing/API tests.
 
-เว็บเดโมซอฟต์แวร์อ้างอิงจากสไลด์ LORMesh แสดง flow การส่งข้อความ/SOS ผ่าน LoRa mesh พร้อมพิกัด GPS และสถานะการแจ้งเตือนปลายทาง
+ซอฟต์แวร์เครือข่ายสื่อสาร Mesh สำหรับงานกู้ภัย รองรับการส่งข้อความหลายโหนด SOS พร้อมพิกัด การเปลี่ยนเส้นทางอัตโนมัติ และการแสดงสถานะผ่าน Web App พัฒนาด้วย Python พร้อมชุดทดสอบ routing และ HTTP API
 
-> โหมดปัจจุบันเป็นการจำลอง: Wi-Fi AP, LoRa, GPS, Buzzer และ LED ไม่ได้เชื่อมต่อฮาร์ดแวร์จริง ตำแหน่งและระยะวิทยุเป็นค่าตัวอย่างเพื่อสาธิต routing
+## สถานะการพัฒนา
 
-## สถานะและแผนต่อยอด
-
-| ความสามารถจากสไลด์ | สถานะปัจจุบัน |
+| ความสามารถ | สถานะปัจจุบัน |
 | --- | --- |
 | ส่งข้อความและเลือกโหนดปลายทาง | ทำงานผ่าน Web App และ Python API |
 | ส่งต่อหลาย hop | ทดสอบ A → B → C ในระบบจำลอง |
@@ -32,10 +30,10 @@ A software prototype based on a university rescue communication project. It simu
 
 [ดูภาพหน้าจอมือถือ](docs/demo-dashboard-mobile.png)
 
-## สิ่งที่ทดลองได้
+## ความสามารถของระบบ
 
 - ดูแผนผัง node A, B, C และ D บน schematic map ที่ทำงานออฟไลน์
-- ส่งข้อความจาก Web App จำลอง แล้วดูเส้นทาง A → B → C และพิกัด GPS ต้นทาง
+- ส่งข้อความผ่าน Web App แล้วดูเส้นทาง A → B → C และพิกัด GPS ต้นทาง
 - กด SOS เพื่อ broadcast ไปยัง node ที่ออนไลน์ พร้อมแนบพิกัด GPS อัตโนมัติ
 - ดู event log ที่ปลายทาง รวมถึง Buzzer/LED จำลอง
 - ปิด Node B เพื่อทดสอบเส้นทางสำรอง A → D → C แล้วเปิดกลับได้
@@ -44,13 +42,13 @@ A software prototype based on a university rescue communication project. It simu
 - ป้อน NMEA RMC/GGA เพื่อทดสอบ parser และอัปเดตพิกัดบนแผนที่
 - ระบบทำงานภายในเครื่อง ไม่เรียกแผนที่หรือ font จากอินเทอร์เน็ต
 
-Node D เป็นรีเลย์สำรองที่เพิ่มเข้ามาเพื่อสาธิตคุณสมบัติ decentralized ในสไลด์ ส่วน A → B → C ยังคงเป็นเส้นทางหลักของเดโม
+โครงข่ายเริ่มต้นใช้ A → B → C เป็นเส้นทางหลัก และ Node D เป็นรีเลย์สำรองสำหรับทดสอบการเลือกเส้นทางใหม่เมื่อ Node B ออฟไลน์
 
-สไลด์ระบุ Leaflet.js สำหรับแผนที่ออฟไลน์ แต่เวอร์ชันนี้ใช้ schematic SVG ภายในเครื่องเพื่อแสดง topology โดยไม่ต้องพึ่ง tile หรือไฟล์ library ภายนอก จึงยังไม่ใช่แผนที่ภูมิศาสตร์ Leaflet จริง
+แผนผังเครือข่ายใช้ schematic SVG ที่ทำงานภายในเครื่องโดยไม่พึ่ง tile หรือ library ภายนอก ส่วนแผนที่ภูมิศาสตร์ Leaflet.js อยู่ในแผนพัฒนาต่อ
 
 การส่งข้อความปกติใช้ Flood เพื่อค้นหาเส้นทางครั้งแรก แล้วเก็บเส้นทางที่พบไว้ใช้ส่งตรงในครั้งต่อไป หาก relay ในเส้นทางเดิมออฟไลน์ ระบบล้าง route นั้นและ flood เพื่อค้นหาเส้นทางใหม่ นี่เป็น **AODV-like route cache แบบย่อ** ไม่ใช่ implementation ของ AODV เต็มรูปแบบ
 
-## เริ่มเดโม
+## เริ่มใช้งาน
 
 ต้องมี Python 3.10 ขึ้นไป ไม่ต้องติดตั้งแพ็กเกจเพิ่ม
 
@@ -97,7 +95,7 @@ Web App ผ่านการตรวจด้วย Chrome กับ API จ�
 | [web/styles.css](web/styles.css) | รูปแบบหน้าจอและ responsive layout |
 | [tests/](tests/) | Unit tests, regression tests และ HTTP integration tests |
 | [.github/workflows/tests.yml](.github/workflows/tests.yml) | ทดสอบอัตโนมัติบน GitHub Actions |
-| [PLAN.md](PLAN.md) | แผนพัฒนาตามสไลด์โครงการ |
+| [PLAN.md](PLAN.md) | แผนพัฒนาและเกณฑ์ทดสอบแต่ละขั้น |
 
 ## โครงสร้างโค้ด
 
@@ -121,7 +119,7 @@ tests/
   test_server.py
 ```
 
-## ขอบเขตและสมมติฐาน
+## ขอบเขตการทำงาน
 
 - โหนดและลิงก์ถูกจำลองใน Python process เดียว ยังไม่ใช่เครือข่ายกระจายบนอุปกรณ์หลายตัว
 
@@ -137,6 +135,6 @@ tests/
 - ยังไม่มี firmware Arduino/C++ หรือการส่ง LoRa ทางอากาศ; route cache เป็นโมเดล AODV-like แบบย่อ
 - ก่อนทดสอบกับอุปกรณ์จริง ต้องตรวจสอบรุ่นโมดูล การต่อขา radio parameters และข้อกำหนดคลื่นความถี่/กำลังส่งที่ใช้
 
-## ขั้นต่อไปของต้นแบบ
+## แผนพัฒนาต่อ
 
 แผนพัฒนา Leaflet ออฟไลน์ การวัดผลจำลอง firmware และการทดสอบภาคสนาม พร้อมเกณฑ์จบแต่ละขั้น อยู่ใน [PLAN.md](PLAN.md)

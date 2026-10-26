@@ -1,7 +1,6 @@
 """Application state for the LORMesh browser demonstration.
 
-The service keeps the system from the project slides as the source of truth:
-users send text or SOS, nodes forward packets, and GPS/alerts appear on a local
+Users send text or SOS, nodes forward packets, and GPS/alerts appear on a local
 web dashboard. Hardware behavior is represented in software for this demo.
 """
 
@@ -31,8 +30,7 @@ class DemoSystem:
         self.network.add_node(MeshNode("A", Position(13.7560, 100.5010)))
         self.network.add_node(MeshNode("B", Position(13.7600, 100.5040)))
         self.network.add_node(MeshNode("C", Position(13.7640, 100.5070)))
-        # D is a backup relay. It makes the slide's decentralization claim
-        # demonstrable: traffic can reach C via D when relay B is offline.
+        # D is a backup relay: traffic can reach C via D when B is offline.
         self.network.add_node(MeshNode("D", Position(13.7600, 100.5060)))
         self.network.connect_within_range(self.RADIO_RANGE_M)
 
