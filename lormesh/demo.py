@@ -21,9 +21,12 @@ def main() -> None:
     sos = network.send_sos("A")
     print(f"SOS        : {sos.packet.text}")
     print(f"GPS        : {sos.packet.position}")
-    print(f"Reached    : {', '.join(event.node_id for event in network.events
-                                  if event.message_id == sos.packet.message_id
-                                  and event.kind == 'delivered')}")
+    recipients = [
+        event.node_id
+        for event in network.events
+        if event.message_id == sos.packet.message_id and event.kind == "delivered"
+    ]
+    print(f"Reached    : {', '.join(recipients)}")
 
 
 if __name__ == "__main__":
